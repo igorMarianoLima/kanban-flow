@@ -1,0 +1,9 @@
+name: kanban-flow
+services:
+  api:
+    build: .
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 3000:3000

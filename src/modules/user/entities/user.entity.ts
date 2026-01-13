@@ -1,7 +1,9 @@
+import { Task } from 'src/modules/tasks/entities/task.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -22,6 +24,9 @@ export class User {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 
   @CreateDateColumn()
   createdAt: Date;

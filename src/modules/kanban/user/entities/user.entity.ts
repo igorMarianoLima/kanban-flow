@@ -1,4 +1,4 @@
-import { Task } from 'src/modules/tasks/entities/task.entity';
+import { Task } from 'src/modules/kanban/tasks/entities/task.entity';
 import {
   Column,
   CreateDateColumn,

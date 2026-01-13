@@ -4,9 +4,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from './modules/config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from './modules/config/config.service';
-import { UserModule } from './modules/user/user.module';
-import { TasksModule } from './modules/tasks/tasks.module';
-import { BoardModule } from './modules/board/board.module';
+import { KanbanModule } from './modules/kanban/kanban.module';
 
 @Module({
   imports: [
@@ -29,9 +27,7 @@ import { BoardModule } from './modules/board/board.module';
         };
       },
     }),
-    UserModule,
-    TasksModule,
-    BoardModule,
+    KanbanModule,
   ],
   controllers: [AppController],
   providers: [AppService],

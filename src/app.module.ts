@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from './modules/config/config.service';
 import { UserModule } from './modules/user/user.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { BoardModule } from './modules/board/board.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
     }),
     UserModule,
     TasksModule,
+    BoardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

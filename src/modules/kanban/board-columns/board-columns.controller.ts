@@ -1,15 +1,23 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
 import { CreateBoardColumnDto } from './dto/create-board-column.dto';
 import { UpdateBoardColumnDto } from './dto/update-board-column.dto';
 
-@Controller('board-columns')
+@Controller('kanban/columns')
 export class BoardColumnsController {
   constructor(private readonly boardColumnsService: BoardColumnsService) {}
 
   @Post()
-  create(@Body() createBoardColumnDto: CreateBoardColumnDto) {
-    return this.boardColumnsService.create(createBoardColumnDto);
+  create(@Body() payload: CreateBoardColumnDto) {
+    return this.boardColumnsService.create(payload);
   }
 
   @Get()
@@ -23,7 +31,10 @@ export class BoardColumnsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardColumnDto: UpdateBoardColumnDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateBoardColumnDto: UpdateBoardColumnDto,
+  ) {
     return this.boardColumnsService.update(+id, updateBoardColumnDto);
   }
 

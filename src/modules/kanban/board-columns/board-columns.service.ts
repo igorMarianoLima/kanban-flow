@@ -1,11 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBoardColumnDto } from './dto/create-board-column.dto';
 import { UpdateBoardColumnDto } from './dto/update-board-column.dto';
+import { Repository } from 'typeorm';
+import { BoardColumn } from './entities/board-column.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class BoardColumnsService {
-  create(createBoardColumnDto: CreateBoardColumnDto) {
-    return 'This action adds a new boardColumn';
+  constructor(
+    @InjectRepository(BoardColumn)
+    private readonly repository: Repository<BoardColumn>,
+  ) {}
+
+  create(payload: CreateBoardColumnDto) {
+    const column = this.repository.create({
+      ...payload,
+      board: {
+        id: payload.boardId,
+      },
+    });
+
+    return this.repository.save(column);
   }
 
   findAll() {

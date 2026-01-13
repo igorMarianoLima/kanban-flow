@@ -1,9 +1,27 @@
 name: kanban-flow
+volumes:
+  pgdata:
+networks:
+  db_network:
 services:
   api:
     build: .
     volumes:
       - .:/app
-      - /app/node_modules
     ports:
       - 3000:3000
+    networks:
+      - db_network
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_SCHEMA}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - db_network
+    ports:
+      - 5432:5432

@@ -13,6 +13,7 @@ import { UserModule } from './modules/user/user.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
         const dbConfig = configService.getDbConfig();
+        const environment = configService.getEnvironment();
 
         return {
           type: 'postgres',
@@ -21,6 +22,8 @@ import { UserModule } from './modules/user/user.module';
           username: dbConfig.username,
           password: dbConfig.password,
           database: dbConfig.database,
+          autoLoadEntities: true,
+          synchronize: environment.env === 'development',
         };
       },
     }),

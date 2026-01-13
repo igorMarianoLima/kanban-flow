@@ -3,10 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Board } from '../../board/entities/board.entity';
 
 @Entity()
 export class User {
@@ -27,6 +29,12 @@ export class User {
 
   @OneToMany(() => Task, (task) => task.user)
   tasks: Task[];
+
+  @OneToMany(() => Board, (board) => board.owner)
+  ownedBoards: Board[];
+
+  @ManyToMany(() => Board, (board) => board.members)
+  boards: Board[];
 
   @CreateDateColumn()
   createdAt: Date;

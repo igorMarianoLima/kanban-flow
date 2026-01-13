@@ -27,8 +27,11 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @OneToMany(() => Task, (task) => task.user)
-  tasks: Task[];
+  @OneToMany(() => Task, (task) => task.creator)
+  createdTasks: Task[];
+
+  @OneToMany(() => Task, (task) => task.assignee)
+  assignedTasks: Task[];
 
   @OneToMany(() => Board, (board) => board.owner)
   ownedBoards: Board[];

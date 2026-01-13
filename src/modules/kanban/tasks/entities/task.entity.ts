@@ -29,9 +29,13 @@ export class Task {
   })
   status: TaskStatus;
 
-  @ManyToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn()
+  creator?: User;
+
+  @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
+  @JoinColumn()
+  assignee?: User;
 
   @ManyToOne(() => BoardColumn, (column) => column.tasks)
   column: BoardColumn;

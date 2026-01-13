@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { TaskStatus } from '../enums/task-status.enum';
 import { User } from 'src/modules/kanban/user/entities/user.entity';
+import { BoardColumn } from '../../board-columns/entities/board-column.entity';
 
 @Entity()
 export class Task {
@@ -31,6 +32,9 @@ export class Task {
   @ManyToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
+
+  @ManyToOne(() => BoardColumn, (column) => column.tasks)
+  column: BoardColumn;
 
   @CreateDateColumn()
   createdAt: Date;

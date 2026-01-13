@@ -6,10 +6,12 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/entities/user.entity';
+import { BoardColumn } from '../../board-columns/entities/board-column.entity';
 
 @Entity()
 export class Board {
@@ -21,6 +23,9 @@ export class Board {
 
   @Column({ nullable: true })
   description?: string;
+
+  @OneToMany(() => BoardColumn, (column) => column.board)
+  columns: BoardColumn[];
 
   @ManyToOne(() => User, {
     onDelete: 'CASCADE',

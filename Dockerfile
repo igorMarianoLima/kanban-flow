@@ -1,9 +1,9 @@
 FROM node:24
 
-WORKDIR /app
+WORKDIR /usr/src/app
 
 COPY package*.json ./
-RUN npm i
+RUN npm install
 
 COPY . .
 

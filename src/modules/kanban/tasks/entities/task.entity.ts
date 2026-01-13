@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { TaskStatus } from '../enums/task-status.enum';
-import { User } from 'src/modules/kanban/user/entities/user.entity';
 import { BoardColumn } from '../../board-columns/entities/board-column.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 
 @Entity()
 export class Task {

@@ -5,6 +5,7 @@ import { ConfigModule } from './modules/config/config.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from './modules/config/config.service';
 import { KanbanModule } from './modules/kanban/kanban.module';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { KanbanModule } from './modules/kanban/kanban.module';
         };
       },
     }),
+    UserModule,
     KanbanModule,
   ],
   controllers: [AppController],

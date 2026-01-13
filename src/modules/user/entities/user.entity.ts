@@ -1,3 +1,4 @@
+import { Board } from 'src/modules/kanban/board/entities/board.entity';
 import { Task } from 'src/modules/kanban/tasks/entities/task.entity';
 import {
   Column,
@@ -8,7 +9,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Board } from '../../board/entities/board.entity';
 
 @Entity()
 export class User {

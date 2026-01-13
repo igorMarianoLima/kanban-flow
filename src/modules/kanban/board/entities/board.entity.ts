@@ -10,8 +10,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../../user/entities/user.entity';
 import { BoardColumn } from '../../board-columns/entities/board-column.entity';
+import { User } from 'src/modules/user/entities/user.entity';
 
 @Entity()
 export class Board {

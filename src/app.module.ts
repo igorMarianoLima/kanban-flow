@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from './modules/config/config.service';
 import { KanbanModule } from './modules/kanban/kanban.module';
 import { UserModule } from './modules/user/user.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UserModule } from './modules/user/user.module';
     }),
     UserModule,
     KanbanModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -5,6 +5,7 @@ import { UserModule } from '../user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { AuthGuard } from './guards/auth.guard';
+import { HashService } from './hash.service';
 
 @Global()
 @Module({
@@ -26,8 +27,8 @@ import { AuthGuard } from './guards/auth.guard';
       },
     }),
   ],
-  providers: [AuthService, AuthGuard],
+  providers: [AuthService, AuthGuard, HashService],
   controllers: [AuthController],
-  exports: [AuthGuard, JwtModule],
+  exports: [AuthGuard, JwtModule, HashService],
 })
 export class AuthModule {}

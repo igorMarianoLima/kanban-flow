@@ -6,19 +6,23 @@ import {
 import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { HashService } from './hash.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly hashService: HashService,
   ) {}
 
   async login(data: LoginDto) {
     try {
       const user = await this.userService.findOneByEmail(data.email);
 
-      if (user.password !== data.password) throw new NotFoundException();
+      if (!(await this.hashService.compare(data.password, user.password))) {
+        throw new UnauthorizedException();
+      }
 
       const accessToken = await this.jwtService.signAsync({
         sub: user.id,

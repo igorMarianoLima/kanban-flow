@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Board } from './entities/board.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
+import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 
 @Injectable()
 export class BoardService {
@@ -15,9 +16,21 @@ export class BoardService {
     private readonly columnsService: BoardColumnsService,
   ) {}
 
-  async create(payload: CreateBoardDto) {
+  async create({
+    user,
+    payload,
+  }: {
+    user: UserRequestDto;
+    payload: CreateBoardDto;
+  }) {
     try {
-      const board = this.repository.create(payload);
+      const board = this.repository.create({
+        ...payload,
+        owner: {
+          id: user.id,
+        },
+      });
+
       await this.repository.save(board);
 
       await Promise.all(
@@ -35,13 +48,20 @@ export class BoardService {
     }
   }
 
-  findAll() {
-    return this.repository.find();
+  findAll(user: UserRequestDto) {
+    return this.repository.findBy({
+      owner: {
+        id: user.id,
+      },
+    });
   }
 
-  async findOne(id: string) {
+  async findOne({ id, user }: { id: string; user: UserRequestDto }) {
     const column = await this.repository.findOneBy({
       id,
+      owner: {
+        id: user.id,
+      },
     });
 
     if (!column) throw new NotFoundException('Board not found');
@@ -49,18 +69,36 @@ export class BoardService {
     return column;
   }
 
-  async update(id: string, payload: UpdateBoardDto) {
-    const board = await this.repository.preload({
-      ...payload,
+  async update({
+    id,
+    payload,
+    user,
+  }: {
+    id: string;
+    payload: UpdateBoardDto;
+    user: UserRequestDto;
+  }) {
+    let board = await this.repository.findOneBy({
       id,
+      owner: {
+        id: user.id,
+      },
     });
 
     if (!board) throw new NotFoundException('Board not found');
+
+    board.name = payload.name ?? board.name;
+    board.description = payload.description ?? board.description;
+
+    await this.repository.save(board);
   }
 
-  async remove(id: string) {
+  async remove({ id, user }: { id: string; user: UserRequestDto }) {
     const board = await this.repository.findOneBy({
       id,
+      owner: {
+        id: user.id,
+      },
     });
 
     if (!board) throw new NotFoundException('Board not found');

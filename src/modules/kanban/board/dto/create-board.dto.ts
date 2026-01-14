@@ -28,9 +28,6 @@ export class CreateBoardDto {
   @Type(() => OmitType(CreateBoardColumnDto, ['boardId']))
   columns: CreateBoardColumnDto[];
 
-  @IsUUID()
-  ownerId: string;
-
   @IsArray()
   @IsUUID(undefined, {
     each: true,

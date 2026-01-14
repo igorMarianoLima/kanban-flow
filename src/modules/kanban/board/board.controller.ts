@@ -12,6 +12,8 @@ import { BoardService } from './board.service';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
+import { User } from 'src/modules/auth/decorators/user.decorator';
+import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 
 @UseGuards(AuthGuard)
 @Controller('kanban/board')
@@ -19,27 +21,34 @@ export class BoardController {
   constructor(private readonly boardService: BoardService) {}
 
   @Post()
-  create(@Body() createBoardDto: CreateBoardDto) {
-    return this.boardService.create(createBoardDto);
+  create(@User() user: UserRequestDto, @Body() payload: CreateBoardDto) {
+    return this.boardService.create({ user, payload });
   }
 
   @Get()
-  findAll() {
-    return this.boardService.findAll();
+  findAll(@User() user: UserRequestDto) {
+    return this.boardService.findAll(user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.boardService.findOne(id);
+  findOne(@User() user: UserRequestDto, @Param('id') id: string) {
+    return this.boardService.findOne({ id, user });
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateBoardDto: UpdateBoardDto) {
-    return this.boardService.update(id, updateBoardDto);
+  update(
+    @User() user: UserRequestDto,
+    @Param('id') id: string,
+    @Body() payload: UpdateBoardDto,
+  ) {
+    return this.boardService.update({ id, payload, user });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boardService.remove(id);
+  remove(@User() user: UserRequestDto, @Param('id') id: string) {
+    return this.boardService.remove({
+      id,
+      user,
+    });
   }
 }

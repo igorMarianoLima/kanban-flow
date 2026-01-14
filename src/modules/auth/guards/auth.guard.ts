@@ -6,15 +6,18 @@ import {
 } from '@nestjs/common';
 import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { JWT_PAYLOAD_KEY, PUBLIC_ROUTE_KEY } from '../auth.constants';
+import { PUBLIC_ROUTE_KEY, REQUEST_USER_KEY } from '../auth.constants';
 import { Reflector } from '@nestjs/core';
 import { JwtPayloadDto } from '../dto/jwt-payload.dto';
+import { UserService } from 'src/modules/user/user.service';
+import { UserRequestDto } from '../dto/user-request.dto';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
+    private readonly userService: UserService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -35,8 +38,16 @@ export class AuthGuard implements CanActivate {
       }
 
       const payload = await this.jwtService.verifyAsync<JwtPayloadDto>(token);
+      const user = await this.userService.findOne(payload.sub);
 
-      request[JWT_PAYLOAD_KEY] = payload;
+      if (!user) throw new Error('User not found');
+
+      const userRequest: UserRequestDto = {
+        id: user.id,
+      };
+
+      request[REQUEST_USER_KEY] = userRequest;
+
       return true;
     } catch (err) {
       if (err instanceof UnauthorizedException) {

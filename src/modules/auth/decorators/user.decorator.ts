@@ -1,11 +1,16 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { JWT_PAYLOAD_KEY } from '../auth.constants';
-import { JwtPayloadDto } from '../dto/jwt-payload.dto';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
+import { REQUEST_USER_KEY } from '../auth.constants';
+import { UserRequestDto } from '../dto/user-request.dto';
 
 export const User = createParamDecorator(
-  (data: keyof JwtPayloadDto, context: ExecutionContext): JwtPayloadDto => {
+  (data: keyof UserRequestDto, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
+    const user = request[REQUEST_USER_KEY] as UserRequestDto;
 
-    return data ? request[JWT_PAYLOAD_KEY][data] : request[JWT_PAYLOAD_KEY];
+    return data ? user[data] : user;
   },
 );

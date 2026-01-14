@@ -29,6 +29,6 @@ import { HashService } from './hash.service';
   ],
   providers: [AuthService, AuthGuard, HashService],
   controllers: [AuthController],
-  exports: [AuthGuard, JwtModule, HashService],
+  exports: [AuthGuard, JwtModule, HashService, UserModule],
 })
 export class AuthModule {}

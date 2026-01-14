@@ -8,6 +8,7 @@ import { JsonWebTokenError, JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { JWT_PAYLOAD_KEY, PUBLIC_ROUTE_KEY } from '../auth.constants';
 import { Reflector } from '@nestjs/core';
+import { JwtPayloadDto } from '../dto/jwt-payload.dto';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -33,7 +34,7 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Authorization header missing');
       }
 
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync<JwtPayloadDto>(token);
 
       request[JWT_PAYLOAD_KEY] = payload;
       return true;

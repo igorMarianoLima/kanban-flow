@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Repository } from 'typeorm';
@@ -39,15 +39,32 @@ export class BoardService {
     return this.repository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} board`;
+  async findOne(id: string) {
+    const column = await this.repository.findOneBy({
+      id,
+    });
+
+    if (!column) throw new NotFoundException('Board not found');
+
+    return column;
   }
 
-  update(id: number, updateBoardDto: UpdateBoardDto) {
-    return `This action updates a #${id} board`;
+  async update(id: string, payload: UpdateBoardDto) {
+    const board = await this.repository.preload({
+      ...payload,
+      id,
+    });
+
+    if (!board) throw new NotFoundException('Board not found');
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} board`;
+  async remove(id: string) {
+    const board = await this.repository.findOneBy({
+      id,
+    });
+
+    if (!board) throw new NotFoundException('Board not found');
+
+    return this.repository.remove(board);
   }
 }

@@ -27,7 +27,7 @@ export class BoardColumnsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.boardColumnsService.findOne(+id);
+    return this.boardColumnsService.findOne(id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class BoardColumnsController {
     @Param('id') id: string,
     @Body() updateBoardColumnDto: UpdateBoardColumnDto,
   ) {
-    return this.boardColumnsService.update(+id, updateBoardColumnDto);
+    return this.boardColumnsService.update(id, updateBoardColumnDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.boardColumnsService.remove(+id);
+    return this.boardColumnsService.remove(id);
   }
 }

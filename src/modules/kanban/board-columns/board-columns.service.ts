@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBoardColumnDto } from './dto/create-board-column.dto';
 import { UpdateBoardColumnDto } from './dto/update-board-column.dto';
 import { Repository } from 'typeorm';
@@ -24,18 +24,45 @@ export class BoardColumnsService {
   }
 
   findAll() {
-    return `This action returns all boardColumns`;
+    return this.repository.find({
+      relations: ['board'],
+      select: {
+        board: {
+          id: true,
+          name: true,
+        },
+      },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} boardColumn`;
+  async findOne(id: string) {
+    const column = await this.repository.findOneBy({
+      id,
+    });
+
+    if (!column) throw new NotFoundException('Column not found');
+
+    return column;
   }
 
-  update(id: number, updateBoardColumnDto: UpdateBoardColumnDto) {
-    return `This action updates a #${id} boardColumn`;
+  async update(id: string, payload: UpdateBoardColumnDto) {
+    const column = await this.repository.preload({
+      ...payload,
+      id,
+    });
+
+    if (!column) throw new NotFoundException('Column not found');
+
+    return this.repository.save(column);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} boardColumn`;
+  async remove(id: string) {
+    const column = await this.repository.findOneBy({
+      id,
+    });
+
+    if (!column) throw new NotFoundException('Column not found');
+
+    return this.repository.remove(column);
   }
 }

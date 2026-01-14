@@ -1,1 +1,2 @@
 export const JWT_PAYLOAD_KEY = 'JWT_PAYLOAD';
+export const PUBLIC_ROUTE_KEY = 'PUBLIC_ROUTE';

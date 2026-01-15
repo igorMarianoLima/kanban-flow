@@ -65,4 +65,14 @@ export class BoardColumnsService {
 
     return this.repository.remove(column);
   }
+
+  async getBoardByColumnId({ id }: { id: string }) {
+    const board = (
+      await this.repository.findOne({ where: { id }, relations: ['board'] })
+    )?.board;
+
+    if (!board) throw new NotFoundException('Column not found');
+
+    return board;
+  }
 }

@@ -8,6 +8,7 @@ import {
   Max,
   Min,
 } from 'class-validator';
+import { StrintToArray } from 'src/common/decorators/string-to-array.decorator';
 import { PagedParamsDto } from 'src/common/dto/paged-params.dto';
 import { BoardColumnStatus } from 'src/modules/kanban/board-columns/enums/board-column-status.enum';
 
@@ -17,44 +18,29 @@ export class FindAllTasksFiltersDto extends PagedParamsDto {
   @IsString({
     each: true,
   })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') return value?.split(',');
-    return value;
-  })
+  @StrintToArray()
   created_by?: string[];
 
   @IsOptional()
   @IsString({ each: true })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') return value?.split(',');
-    return value;
-  })
+  @StrintToArray()
   assigned_to?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') return value?.split(',');
-    return value;
-  })
+  @StrintToArray()
   board_ids?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') return value?.split(',');
-    return value;
-  })
+  @StrintToArray()
   column_ids?: string[];
 
   @IsOptional()
   @IsArray()
   @IsEnum(BoardColumnStatus, { each: true })
-  @Transform(({ value }) => {
-    if (typeof value === 'string') return value?.split(',');
-    return value;
-  })
+  @StrintToArray()
   statuses?: BoardColumnStatus[];
 }

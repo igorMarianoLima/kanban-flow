@@ -72,7 +72,7 @@ export class BoardService {
           id: user.id,
         },
       },
-      relations: ['members', 'owner'],
+      relations: ['members', 'owner', 'columns'],
       select: {
         members: {
           id: true,
@@ -81,6 +81,11 @@ export class BoardService {
         owner: {
           id: true,
           name: true,
+        },
+        columns: {
+          id: true,
+          name: true,
+          status: true,
         },
       },
     });

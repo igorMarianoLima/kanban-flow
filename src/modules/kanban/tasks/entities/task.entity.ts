@@ -30,7 +30,9 @@ export class Task {
   @JoinColumn()
   assignee?: User;
 
-  @ManyToOne(() => BoardColumn, (column) => column.tasks)
+  @ManyToOne(() => BoardColumn, (column) => column.tasks, {
+    onDelete: 'CASCADE',
+  })
   column: BoardColumn;
 
   @CreateDateColumn()

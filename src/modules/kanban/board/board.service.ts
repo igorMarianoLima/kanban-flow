@@ -156,4 +156,15 @@ export class BoardService {
 
     return this.repository.save(board);
   }
+
+  async isMember({ userId, boardId }: { userId: string; boardId: string }) {
+    return this.repository.exists({
+      where: {
+        id: boardId,
+        members: {
+          id: userId,
+        },
+      },
+    });
+  }
 }

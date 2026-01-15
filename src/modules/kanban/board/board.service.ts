@@ -6,6 +6,7 @@ import { Board } from './entities/board.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
+import { UserService } from 'src/modules/user/user.service';
 
 @Injectable()
 export class BoardService {
@@ -14,6 +15,7 @@ export class BoardService {
     private readonly repository: Repository<Board>,
 
     private readonly columnsService: BoardColumnsService,
+    private readonly usersService: UserService,
   ) {}
 
   async create({
@@ -32,6 +34,12 @@ export class BoardService {
       });
 
       await this.repository.save(board);
+
+      await this.addMembers({
+        user,
+        boardId: board.id,
+        userIds: payload.memberIds,
+      });
 
       await Promise.all(
         payload.columns.map((column) =>
@@ -57,10 +65,23 @@ export class BoardService {
   }
 
   async findOne({ id, user }: { id: string; user: UserRequestDto }) {
-    const column = await this.repository.findOneBy({
-      id,
-      owner: {
-        id: user.id,
+    const column = await this.repository.findOne({
+      where: {
+        id,
+        owner: {
+          id: user.id,
+        },
+      },
+      relations: ['members', 'owner'],
+      select: {
+        members: {
+          id: true,
+          name: true,
+        },
+        owner: {
+          id: true,
+          name: true,
+        },
       },
     });
 
@@ -104,5 +125,30 @@ export class BoardService {
     if (!board) throw new NotFoundException('Board not found');
 
     return this.repository.remove(board);
+  }
+
+  async addMembers({
+    user,
+    boardId,
+    userIds,
+  }: {
+    user: UserRequestDto;
+    boardId: string;
+    userIds: string[];
+  }) {
+    const board = await this.findOne({ id: boardId, user });
+
+    const users = await this.usersService.findManyById(userIds);
+
+    if (!users.length) return board;
+
+    const existingIds = new Set(board.members?.map((m) => m.id));
+    const newMembers = users.filter((u) => !existingIds.has(u.id));
+
+    if (!newMembers) return board;
+
+    board.members.push(...newMembers);
+
+    return this.repository.save(board);
   }
 }

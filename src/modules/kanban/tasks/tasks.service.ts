@@ -1,12 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Task } from './entities/task.entity';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { BoardService } from '../board/board.service';
+import { FindAllTasksFiltersDto } from './dto/request/find-all-tasks-filters.dto';
 
 @Injectable()
 export class TasksService {
@@ -67,8 +68,38 @@ export class TasksService {
     return this.repository.save(task);
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  findAll(params?: FindAllTasksFiltersDto) {
+    const { page_number = 0, page_size = 10 } = params ?? {};
+
+    return this.repository.find({
+      where: {
+        ...(params?.assigned_to && {
+          assignee: {
+            id: In(params.assigned_to),
+          },
+        }),
+        ...(params?.created_by && {
+          creator: {
+            id: In(params.created_by),
+          },
+        }),
+        column: {
+          ...(params?.column_ids && {
+            id: In(params.column_ids),
+          }),
+          ...(params?.board_ids && {
+            board: {
+              id: In(params?.board_ids),
+            },
+          }),
+          ...(params?.statuses && {
+            status: In(params.statuses),
+          }),
+        },
+      },
+      take: page_size,
+      skip: page_size * page_number,
+    });
   }
 
   findOne(id: number) {
@@ -84,22 +115,14 @@ export class TasksService {
   }
 
   findByAssignedUser({ id }: { id: string }) {
-    return this.repository.find({
-      where: {
-        assignee: {
-          id,
-        },
-      },
+    return this.findAll({
+      assigned_to: [id],
     });
   }
 
   findByCreator({ id }: { id: string }) {
-    return this.repository.find({
-      where: {
-        creator: {
-          id,
-        },
-      },
+    return this.findAll({
+      created_by: [id],
     });
   }
 }

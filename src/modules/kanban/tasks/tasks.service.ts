@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { BoardService } from '../board/board.service';
 import { FindAllTasksFiltersDto } from './dto/request/find-all-tasks-filters.dto';
+import { PagedParamsDto } from 'src/common/dto/paged-params.dto';
 
 @Injectable()
 export class TasksService {
@@ -114,13 +115,13 @@ export class TasksService {
     return `This action removes a #${id} task`;
   }
 
-  findByAssignedUser({ id }: { id: string }) {
+  findByAssignedUser({ id }: { id: string; params?: PagedParamsDto }) {
     return this.findAll({
       assigned_to: [id],
     });
   }
 
-  findByCreator({ id }: { id: string }) {
+  findByCreator({ id }: { id: string; params?: PagedParamsDto }) {
     return this.findAll({
       created_by: [id],
     });

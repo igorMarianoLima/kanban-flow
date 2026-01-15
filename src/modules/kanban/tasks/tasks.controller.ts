@@ -16,6 +16,7 @@ import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 import { FindAllTasksFiltersDto } from './dto/request/find-all-tasks-filters.dto';
+import { PagedParamsDto } from 'src/common/dto/paged-params.dto';
 
 @Controller('kanban/tasks')
 @UseGuards(AuthGuard)
@@ -39,16 +40,24 @@ export class TasksController {
   }
 
   @Get('assigned-to-me')
-  getTasksAssignedToMe(@User() user: UserRequestDto) {
+  getTasksAssignedToMe(
+    @User() user: UserRequestDto,
+    @Query() params?: PagedParamsDto,
+  ) {
     return this.tasksService.findByAssignedUser({
       id: user.id,
+      params,
     });
   }
 
   @Get('created-by-me')
-  getTasksCreatedByMe(@User() user: UserRequestDto) {
+  getTasksCreatedByMe(
+    @User() user: UserRequestDto,
+    @Query() params?: PagedParamsDto,
+  ) {
     return this.tasksService.findByCreator({
       id: user.id,
+      params,
     });
   }
 

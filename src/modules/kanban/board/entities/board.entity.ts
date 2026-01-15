@@ -24,7 +24,9 @@ export class Board {
   @Column({ nullable: true })
   description?: string;
 
-  @OneToMany(() => BoardColumn, (column) => column.board)
+  @OneToMany(() => BoardColumn, (column) => column.board, {
+    onDelete: 'CASCADE',
+  })
   columns: BoardColumn[];
 
   @ManyToOne(() => User, {
@@ -33,7 +35,9 @@ export class Board {
   @JoinColumn({ name: 'owner_id' })
   owner: User;
 
-  @ManyToMany(() => User, (user) => user.boards)
+  @ManyToMany(() => User, (user) => user.boards, {
+    onDelete: 'CASCADE',
+  })
   @JoinTable()
   members: User[];
 

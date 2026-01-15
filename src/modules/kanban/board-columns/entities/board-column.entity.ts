@@ -24,7 +24,9 @@ export class BoardColumn {
   })
   status: BoardColumnStatus;
 
-  @ManyToOne(() => Board, (board) => board.columns)
+  @ManyToOne(() => Board, (board) => board.columns, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'board_id' })
   board: Board;
 

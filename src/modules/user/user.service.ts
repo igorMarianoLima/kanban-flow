@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashService } from '../auth/hash.service';
@@ -33,6 +33,12 @@ export class UserService {
   findOne(id: string) {
     return this.repository.findOneByOrFail({
       id,
+    });
+  }
+
+  findManyById(IDs: string[]) {
+    return this.repository.findBy({
+      id: In(IDs),
     });
   }
 

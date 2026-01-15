@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { In, Repository } from 'typeorm';
@@ -103,8 +107,35 @@ export class TasksService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne({ id, user }: { id: string; user: UserRequestDto }) {
+    const task = await this.repository
+      .createQueryBuilder('task')
+      .innerJoin('task.creator', 'creator')
+      .innerJoin('task.assignee', 'assignee')
+      .innerJoin('task.column', 'column')
+      .innerJoin('column.board', 'board')
+      .innerJoin('board.members', 'member')
+      .where('task.id = :id', { id })
+      .andWhere('member.id = :userId', { userId: user.id })
+      .select([
+        'task.id',
+        'task.title',
+        'task.description',
+        'creator.id',
+        'creator.name',
+        'assignee.id',
+        'assignee.name',
+        'column.id',
+        'column.name',
+        'column.status',
+        'task.createdAt',
+        'task.updatedAt',
+      ])
+      .getOne();
+
+    if (!task) throw new NotFoundException('Task not found');
+
+    return task!;
   }
 
   update(id: number, updateTaskDto: UpdateTaskDto) {

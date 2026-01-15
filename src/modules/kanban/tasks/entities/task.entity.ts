@@ -22,13 +22,6 @@ export class Task {
   @Column({ nullable: true })
   description?: string;
 
-  @Column({
-    type: 'enum',
-    enum: TaskStatus,
-    default: TaskStatus.TODO,
-  })
-  status: TaskStatus;
-
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn()
   creator?: User;

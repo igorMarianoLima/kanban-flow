@@ -7,6 +7,7 @@ import { UserService } from '../user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { HashService } from './hash.service';
+import { SignupDto } from './dto/signup.dto';
 
 @Injectable()
 export class AuthService {
@@ -37,6 +38,20 @@ export class AuthService {
         throw new UnauthorizedException('Invalid email/password');
       }
 
+      throw err;
+    }
+  }
+
+  async signup(data: SignupDto) {
+    try {
+      await this.userService.create(data);
+
+      return this.login({
+        email: data.email,
+        password: data.password,
+      });
+    } catch (err) {
+      console.log({ err });
       throw err;
     }
   }

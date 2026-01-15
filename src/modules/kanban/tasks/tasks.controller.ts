@@ -33,6 +33,20 @@ export class TasksController {
     return this.tasksService.findAll();
   }
 
+  @Get('assigned-to-me')
+  getTasksAssignedToMe(@User() user: UserRequestDto) {
+    return this.tasksService.findByAssignedUser({
+      id: user.id,
+    });
+  }
+
+  @Get('created-by-me')
+  getTasksCreatedByMe(@User() user: UserRequestDto) {
+    return this.tasksService.findByCreator({
+      id: user.id,
+    });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tasksService.findOne(+id);

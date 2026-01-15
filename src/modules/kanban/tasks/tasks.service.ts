@@ -82,4 +82,24 @@ export class TasksService {
   remove(id: number) {
     return `This action removes a #${id} task`;
   }
+
+  findByAssignedUser({ id }: { id: string }) {
+    return this.repository.find({
+      where: {
+        assignee: {
+          id,
+        },
+      },
+    });
+  }
+
+  findByCreator({ id }: { id: string }) {
+    return this.repository.find({
+      where: {
+        creator: {
+          id,
+        },
+      },
+    });
+  }
 }

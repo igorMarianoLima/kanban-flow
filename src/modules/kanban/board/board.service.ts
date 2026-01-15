@@ -35,10 +35,13 @@ export class BoardService {
 
       await this.repository.save(board);
 
+      // Add all members from payload and add board owner as member
+      const members = [...payload.memberIds, user.id];
+
       await this.addMembers({
         user,
         boardId: board.id,
-        userIds: payload.memberIds,
+        userIds: members,
       });
 
       await Promise.all(

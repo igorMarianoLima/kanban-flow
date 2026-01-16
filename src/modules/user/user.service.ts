@@ -30,10 +30,16 @@ export class UserService {
     return this.repository.find();
   }
 
-  findOne(id: string) {
-    return this.repository.findOneByOrFail({
-      id,
+  async findOne(id: string) {
+    const user = await this.repository.findOne({
+      where: {
+        id,
+      },
     });
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
   }
 
   findManyById(IDs: string[]) {

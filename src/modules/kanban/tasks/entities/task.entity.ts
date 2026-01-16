@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -40,4 +41,9 @@ export class Task {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn({
+    nullable: true,
+  })
+  deletedAt?: Date;
 }

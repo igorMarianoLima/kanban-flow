@@ -172,8 +172,13 @@ export class TasksService {
     return this.repository.save(task);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove({ id, user }: { id: string; user: UserRequestDto }) {
+    const task = await this.findOne({
+      id,
+      user,
+    });
+
+    await this.repository.softDelete(task.id);
   }
 
   findByAssignedUser({ id }: { id: string; params?: PagedParamsDto }) {

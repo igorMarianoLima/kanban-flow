@@ -13,6 +13,8 @@ import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { BoardService } from '../board/board.service';
 import { FindAllTasksFiltersDto } from './dto/request/find-all-tasks-filters.dto';
 import { PagedParamsDto } from 'src/common/dto/paged-params.dto';
+import { User } from 'src/modules/user/entities/user.entity';
+import { BoardColumn } from '../board-columns/entities/board-column.entity';
 
 @Injectable()
 export class TasksService {
@@ -138,8 +140,36 @@ export class TasksService {
     return task!;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update({
+    id,
+    payload,
+    user,
+  }: {
+    id: string;
+    payload: UpdateTaskDto;
+    user: UserRequestDto;
+  }) {
+    const task = await this.findOne({
+      id,
+      user,
+    });
+
+    task.title = payload.title || task.title;
+    task.description = payload.description || task.description;
+
+    if (payload.responsibleId) {
+      task.assignee = {
+        id: payload.responsibleId,
+      } as User;
+    }
+
+    if (payload.columnId) {
+      task.column = {
+        id: payload.columnId,
+      } as BoardColumn;
+    }
+
+    return this.repository.save(task);
   }
 
   remove(id: number) {

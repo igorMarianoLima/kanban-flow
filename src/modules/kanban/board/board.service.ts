@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBoardDto } from './dto/create-board.dto';
 import { UpdateBoardDto } from './dto/update-board.dto';
 import { Repository } from 'typeorm';
@@ -7,6 +11,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 import { UserService } from 'src/modules/user/user.service';
+import { AddMembersDto } from './dto/add-members.dto';
+import { User } from 'src/modules/user/entities/user.entity';
 
 @Injectable()
 export class BoardService {

@@ -14,6 +14,7 @@ import { UpdateBoardDto } from './dto/update-board.dto';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { User } from 'src/modules/auth/decorators/user.decorator';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
+import { AddMembersDto } from './dto/add-members.dto';
 
 @UseGuards(AuthGuard)
 @Controller('kanban/board')
@@ -49,6 +50,19 @@ export class BoardController {
     return this.boardService.remove({
       id,
       user,
+    });
+  }
+
+  @Post(':id/members')
+  addMembers(
+    @User() user: UserRequestDto,
+    @Param('id') boardId: string,
+    @Body() payload: AddMembersDto,
+  ) {
+    return this.boardService.addMembers({
+      user,
+      boardId,
+      userIds: payload.ids,
     });
   }
 }

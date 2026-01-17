@@ -1,5 +1,7 @@
 import {
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -11,8 +13,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BoardColumnsService } from '../board-columns/board-columns.service';
 import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 import { UserService } from 'src/modules/user/user.service';
-import { AddMembersDto } from './dto/add-members.dto';
-import { User } from 'src/modules/user/entities/user.entity';
 
 @Injectable()
 export class BoardService {
@@ -20,6 +20,7 @@ export class BoardService {
     @InjectRepository(Board)
     private readonly repository: Repository<Board>,
 
+    @Inject(forwardRef(() => BoardColumnsService))
     private readonly columnsService: BoardColumnsService,
     private readonly usersService: UserService,
   ) {}
@@ -55,6 +56,7 @@ export class BoardService {
           this.columnsService.create({
             boardId: board.id,
             payload: column,
+            user,
           }),
         ),
       );
@@ -74,12 +76,18 @@ export class BoardService {
   }
 
   async findOne({ id, user }: { id: string; user: UserRequestDto }) {
+    const isMember = await this.isMember({
+      userId: user.id,
+      boardId: id,
+    });
+
+    if (!isMember) {
+      throw new ForbiddenException('You cannot access this resource');
+    }
+
     const column = await this.repository.findOne({
       where: {
         id,
-        owner: {
-          id: user.id,
-        },
       },
       relations: ['members', 'owner', 'columns'],
       select: {

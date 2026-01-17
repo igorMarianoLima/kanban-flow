@@ -1,28 +1,50 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateBoardColumnDto } from './dto/create-board-column.dto';
 import { UpdateBoardColumnDto } from './dto/update-board-column.dto';
 import { Repository } from 'typeorm';
 import { BoardColumn } from './entities/board-column.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
+import { BoardService } from '../board/board.service';
 
 @Injectable()
 export class BoardColumnsService {
   constructor(
     @InjectRepository(BoardColumn)
     private readonly repository: Repository<BoardColumn>,
+
+    @Inject(forwardRef(() => BoardService))
+    private readonly boardService: BoardService,
   ) {}
 
-  create({
+  async create({
+    user,
     boardId,
     payload,
   }: {
+    user: UserRequestDto;
     boardId: string;
     payload: CreateBoardColumnDto;
   }) {
+    const board = await this.boardService.findOne({
+      id: boardId,
+      user,
+    });
+
+    if (board.owner.id !== user.id) {
+      throw new ForbiddenException('You cannot access this resource');
+    }
+
     const column = this.repository.create({
       ...payload,
       board: {
-        id: boardId,
+        id: board.id,
       },
     });
 

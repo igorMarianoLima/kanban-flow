@@ -1,10 +1,4 @@
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsString,
-  IsUUID,
-  MinLength,
-} from 'class-validator';
+import { IsEnum, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { BoardColumnStatus } from '../enums/board-column-status.enum';
 
 export class CreateBoardColumnDto {
@@ -15,7 +9,4 @@ export class CreateBoardColumnDto {
 
   @IsEnum(BoardColumnStatus)
   status: BoardColumnStatus;
-
-  @IsUUID()
-  boardId: string;
 }

@@ -9,7 +9,6 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateBoardColumnDto } from '../../board-columns/dto/create-board-column.dto';
-import { OmitType } from '@nestjs/mapped-types';
 
 export class CreateBoardDto {
   @IsString()
@@ -25,7 +24,7 @@ export class CreateBoardDto {
   @ValidateNested({
     each: true,
   })
-  @Type(() => OmitType(CreateBoardColumnDto, ['boardId']))
+  @Type(() => CreateBoardColumnDto)
   columns: CreateBoardColumnDto[];
 
   @IsArray()

@@ -12,11 +12,17 @@ export class BoardColumnsService {
     private readonly repository: Repository<BoardColumn>,
   ) {}
 
-  create(payload: CreateBoardColumnDto) {
+  create({
+    boardId,
+    payload,
+  }: {
+    boardId: string;
+    payload: CreateBoardColumnDto;
+  }) {
     const column = this.repository.create({
       ...payload,
       board: {
-        id: payload.boardId,
+        id: boardId,
       },
     });
 

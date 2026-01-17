@@ -6,18 +6,27 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { BoardColumnsService } from './board-columns.service';
 import { CreateBoardColumnDto } from './dto/create-board-column.dto';
 import { UpdateBoardColumnDto } from './dto/update-board-column.dto';
+import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 
-@Controller('kanban/columns')
+@Controller('kanban/:boardId/columns')
+@UseGuards(AuthGuard)
 export class BoardColumnsController {
   constructor(private readonly boardColumnsService: BoardColumnsService) {}
 
   @Post()
-  create(@Body() payload: CreateBoardColumnDto) {
-    return this.boardColumnsService.create(payload);
+  create(
+    @Param('boardId') boardId: string,
+    @Body() payload: CreateBoardColumnDto,
+  ) {
+    return this.boardColumnsService.create({
+      boardId,
+      payload,
+    });
   }
 
   @Get()

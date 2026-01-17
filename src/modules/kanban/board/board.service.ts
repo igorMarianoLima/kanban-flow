@@ -53,8 +53,8 @@ export class BoardService {
       await Promise.all(
         payload.columns.map((column) =>
           this.columnsService.create({
-            ...column,
             boardId: board.id,
+            payload: column,
           }),
         ),
       );

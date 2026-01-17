@@ -125,20 +125,19 @@ export class BoardColumnsService {
     return this.repository.save(column);
   }
 
-  async remove(id: string) {
-    const column = await this.repository.findOneBy({
+  async remove({ id, user }: { id: string; user: UserRequestDto }) {
+    const column = await this.findOne({
       id,
+      user,
     });
 
-    if (!column) throw new NotFoundException('Column not found');
+    const deleted = !!(await this.repository.softDelete(column.id)).affected;
 
-    return this.repository.remove(column);
+    return deleted;
   }
 
-  async getBoardByColumnId({ id }: { id: string }) {
-    const board = (
-      await this.repository.findOne({ where: { id }, relations: ['board'] })
-    )?.board;
+  async getBoardByColumnId({ id, user }: { id: string; user: UserRequestDto }) {
+    const board = (await this.findOne({ id, user })).board;
 
     if (!board) throw new NotFoundException('Column not found');
 

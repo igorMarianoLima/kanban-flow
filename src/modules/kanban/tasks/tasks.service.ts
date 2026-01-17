@@ -36,6 +36,7 @@ export class TasksService {
   }) {
     const board = await this.boardColumnsService.getBoardByColumnId({
       id: payload.columnId,
+      user,
     });
 
     const creatorIsMember = await this.boardService.isMember({
@@ -217,6 +218,7 @@ export class TasksService {
     if (payload.columnId) {
       const board = await this.boardColumnsService.getBoardByColumnId({
         id: payload.columnId,
+        user,
       });
 
       if (board.id !== task.column.board.id) {

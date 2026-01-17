@@ -59,7 +59,10 @@ export class BoardColumnsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.boardColumnsService.remove(id);
+  remove(@User() user: UserRequestDto, @Param('id') id: string) {
+    return this.boardColumnsService.remove({
+      id,
+      user,
+    });
   }
 }

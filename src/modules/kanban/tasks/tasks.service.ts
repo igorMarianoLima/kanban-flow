@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -150,6 +151,7 @@ export class TasksService {
       .innerJoin('task.column', 'column')
       .innerJoin('column.board', 'board')
       .innerJoin('board.members', 'member')
+      .innerJoin('board.owner', 'board_owner')
       .where('task.id = :id', { id })
       .andWhere('member.id = :userId', { userId: user.id })
       .select([
@@ -163,6 +165,11 @@ export class TasksService {
         'column.id',
         'column.name',
         'column.status',
+        'board.id',
+        'board.name',
+        'board.description',
+        'board_owner.id',
+        'board_owner.name',
         'task.createdAt',
         'task.updatedAt',
       ])
@@ -191,12 +198,31 @@ export class TasksService {
     task.description = payload.description || task.description;
 
     if (payload.responsibleId) {
+      const isMember = await this.boardService.isMember({
+        userId: payload.responsibleId,
+        boardId: task.column.board.id,
+      });
+
+      if (!isMember) {
+        throw new ForbiddenException(
+          'Responsible should be a member of the current board',
+        );
+      }
+
       task.assignee = {
         id: payload.responsibleId,
       } as User;
     }
 
     if (payload.columnId) {
+      const board = await this.boardColumnsService.getBoardByColumnId({
+        id: payload.columnId,
+      });
+
+      if (board.id !== task.column.board.id) {
+        throw new ForbiddenException('Cannot move task to another board');
+      }
+
       task.column = {
         id: payload.columnId,
       } as BoardColumn;
@@ -210,6 +236,13 @@ export class TasksService {
       id,
       user,
     });
+
+    const isCreator = user.id === task.creator?.id;
+    const isBoardOwner = user.id === task.column.board.owner.id;
+
+    if (!isCreator && !isBoardOwner) {
+      throw new ForbiddenException('You cannot access this resource');
+    }
 
     await this.repository.softDelete(task.id);
   }

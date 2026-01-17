@@ -71,6 +71,8 @@ export class BoardColumnsService {
       'column.id',
       'column.name',
       'column.status',
+      'column.createdAt',
+      'column.updatedAt',
       'board.id',
       'board.name',
     ]);
@@ -89,6 +91,9 @@ export class BoardColumnsService {
     query = query.select([
       'column.id',
       'column.name',
+      'column.status',
+      'column.createdAt',
+      'column.updatedAt',
       'board.id',
       'board.name',
     ]);
@@ -100,13 +105,22 @@ export class BoardColumnsService {
     return column;
   }
 
-  async update(id: string, payload: UpdateBoardColumnDto) {
-    const column = await this.repository.preload({
-      ...payload,
+  async update({
+    id,
+    payload,
+    user,
+  }: {
+    id: string;
+    payload: UpdateBoardColumnDto;
+    user: UserRequestDto;
+  }) {
+    const column = await this.findOne({
       id,
+      user,
     });
 
-    if (!column) throw new NotFoundException('Column not found');
+    column.name = payload.name ?? column.name;
+    column.status = payload.status ?? column.status;
 
     return this.repository.save(column);
   }

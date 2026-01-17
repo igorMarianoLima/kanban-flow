@@ -51,10 +51,11 @@ export class BoardColumnsController {
 
   @Patch(':id')
   update(
+    @User() user: UserRequestDto,
     @Param('id') id: string,
-    @Body() updateBoardColumnDto: UpdateBoardColumnDto,
+    @Body() payload: UpdateBoardColumnDto,
   ) {
-    return this.boardColumnsService.update(id, updateBoardColumnDto);
+    return this.boardColumnsService.update({ id, payload, user });
   }
 
   @Delete(':id')

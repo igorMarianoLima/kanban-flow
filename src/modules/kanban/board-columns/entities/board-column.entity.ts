@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { BoardColumnStatus } from '../enums/board-column-status.enum';
 import { Board } from '../../board/entities/board.entity';
@@ -34,4 +36,10 @@ export class BoardColumn {
     onDelete: 'CASCADE',
   })
   tasks: Task[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

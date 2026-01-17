@@ -34,8 +34,11 @@ export class BoardColumnsController {
   }
 
   @Get()
-  findAll() {
-    return this.boardColumnsService.findAll();
+  findAll(@User() user: UserRequestDto, @Param('boardId') boardId: string) {
+    return this.boardColumnsService.findAll({
+      id: boardId,
+      user,
+    });
   }
 
   @Get(':id')

@@ -51,16 +51,31 @@ export class BoardColumnsService {
     return this.repository.save(column);
   }
 
-  findAll() {
-    return this.repository.find({
-      relations: ['board'],
-      select: {
-        board: {
-          id: true,
-          name: true,
-        },
-      },
+  async findAll({ id, user }: { id: string; user: UserRequestDto }) {
+    const isMember = await this.boardService.isMember({
+      boardId: id,
+      userId: user.id,
     });
+
+    if (!isMember) {
+      throw new ForbiddenException("You aren't a member of this board");
+    }
+
+    let query = this.repository
+      .createQueryBuilder('column')
+      .innerJoin('column.board', 'board');
+
+    query = query.andWhere('board.id = :boardId', { boardId: id });
+
+    query = query.select([
+      'column.id',
+      'column.name',
+      'column.status',
+      'board.id',
+      'board.name',
+    ]);
+
+    return await query.getMany();
   }
 
   async findOne(id: string) {

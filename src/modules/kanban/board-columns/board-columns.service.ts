@@ -78,10 +78,22 @@ export class BoardColumnsService {
     return await query.getMany();
   }
 
-  async findOne(id: string) {
-    const column = await this.repository.findOneBy({
-      id,
-    });
+  async findOne({ id, user }: { id: string; user: UserRequestDto }) {
+    let query = this.repository
+      .createQueryBuilder('column')
+      .innerJoin('column.board', 'board')
+      .innerJoin('board.members', 'member')
+      .andWhere('member.id = :userId', { userId: user.id })
+      .andWhere('column.id = :id', { id });
+
+    query = query.select([
+      'column.id',
+      'column.name',
+      'board.id',
+      'board.name',
+    ]);
+
+    const column = await query.getOne();
 
     if (!column) throw new NotFoundException('Column not found');
 

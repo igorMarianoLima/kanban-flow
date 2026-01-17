@@ -75,38 +75,68 @@ export class TasksService {
     return this.repository.save(task);
   }
 
-  findAll(params?: FindAllTasksFiltersDto) {
-    const { page_number = 0, page_size = 10 } = params ?? {};
+  findAll({
+    user,
+    params = {},
+  }: {
+    user: UserRequestDto;
+    params?: FindAllTasksFiltersDto;
+  }) {
+    const { page_number = 0, page_size = 10 } = params;
 
-    return this.repository.find({
-      where: {
-        ...(params?.assigned_to && {
-          assignee: {
-            id: In(params.assigned_to),
-          },
-        }),
-        ...(params?.created_by && {
-          creator: {
-            id: In(params.created_by),
-          },
-        }),
-        column: {
-          ...(params?.column_ids && {
-            id: In(params.column_ids),
-          }),
-          ...(params?.board_ids && {
-            board: {
-              id: In(params?.board_ids),
-            },
-          }),
-          ...(params?.statuses && {
-            status: In(params.statuses),
-          }),
-        },
-      },
-      take: page_size,
-      skip: page_size * page_number,
-    });
+    let query = this.repository
+      .createQueryBuilder('task')
+      .leftJoin('task.assignee', 'assignee')
+      .leftJoin('task.creator', 'creator')
+      .innerJoin('task.column', 'column')
+      .innerJoin('column.board', 'board')
+      .innerJoin('board.members', 'member');
+
+    if (params.assigned_to) {
+      query = query.andWhere('assignee.id IN (:...ids)', {
+        ids: params.assigned_to,
+      });
+    }
+
+    if (params.created_by) {
+      query = query.andWhere('creator.id IN (:...ids)', {
+        ids: params.created_by,
+      });
+    }
+
+    if (params.column_ids) {
+      query = query.andWhere('column.id IN (:...ids)', {
+        ids: params.column_ids,
+      });
+    }
+
+    if (params.statuses) {
+      query = query.andWhere('column.status IN (:...statuses)', {
+        statuses: params.statuses,
+      });
+    }
+
+    if (params.board_ids) {
+      query = query.andWhere('board.id IN (:...ids)', {
+        ids: params.board_ids,
+      });
+    }
+
+    query = query.limit(page_size).offset(page_number * page_size);
+    query = query.select([
+      'task.id',
+      'task.title',
+      'task.description',
+      'creator.id',
+      'creator.name',
+      'assignee.id',
+      'assignee.name',
+      'column.id',
+      'column.name',
+      'column.status',
+    ]);
+
+    return query.getMany();
   }
 
   async findOne({ id, user }: { id: string; user: UserRequestDto }) {
@@ -181,15 +211,39 @@ export class TasksService {
     await this.repository.softDelete(task.id);
   }
 
-  findByAssignedUser({ id }: { id: string; params?: PagedParamsDto }) {
+  findByAssignedUser({
+    id,
+    user,
+    params,
+  }: {
+    id: string;
+    user: UserRequestDto;
+    params?: PagedParamsDto;
+  }) {
     return this.findAll({
-      assigned_to: [id],
+      user,
+      params: {
+        ...params,
+        assigned_to: [id],
+      },
     });
   }
 
-  findByCreator({ id }: { id: string; params?: PagedParamsDto }) {
+  findByCreator({
+    id,
+    user,
+    params,
+  }: {
+    id: string;
+    user: UserRequestDto;
+    params?: PagedParamsDto;
+  }) {
     return this.findAll({
-      created_by: [id],
+      user,
+      params: {
+        ...params,
+        created_by: [id],
+      },
     });
   }
 }

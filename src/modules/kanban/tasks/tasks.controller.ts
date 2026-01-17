@@ -33,10 +33,10 @@ export class TasksController {
 
   @Get()
   findAll(
-    @Query()
-    params?: FindAllTasksFiltersDto,
+    @User() user: UserRequestDto,
+    @Query() params?: FindAllTasksFiltersDto,
   ) {
-    return this.tasksService.findAll(params);
+    return this.tasksService.findAll({ user, params });
   }
 
   @Get('assigned-to-me')
@@ -46,6 +46,7 @@ export class TasksController {
   ) {
     return this.tasksService.findByAssignedUser({
       id: user.id,
+      user,
       params,
     });
   }
@@ -57,6 +58,7 @@ export class TasksController {
   ) {
     return this.tasksService.findByCreator({
       id: user.id,
+      user,
       params,
     });
   }

@@ -92,6 +92,9 @@ export class TasksService {
       .innerJoin('column.board', 'board')
       .innerJoin('board.members', 'member');
 
+    // Only return tasks where the current user is member of board
+    query.andWhere('member.id = :id', { id: user.id });
+
     if (params.assigned_to) {
       query = query.andWhere('assignee.id IN (:...ids)', {
         ids: params.assigned_to,

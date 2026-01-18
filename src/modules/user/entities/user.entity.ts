@@ -39,6 +39,11 @@ export class User {
   @ManyToMany(() => Board, (board) => board.members)
   boards: Board[];
 
+  @Column({
+    default: false,
+  })
+  isSuperAdmin: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

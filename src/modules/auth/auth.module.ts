@@ -6,6 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '../config/config.service';
 import { AuthGuard } from './guards/auth.guard';
 import { HashService } from './hash.service';
+import { SuperAdminGuard } from './guards/super-admin.guard';
 
 @Global()
 @Module({
@@ -27,8 +28,8 @@ import { HashService } from './hash.service';
       },
     }),
   ],
-  providers: [AuthService, AuthGuard, HashService],
+  providers: [AuthService, AuthGuard, HashService, SuperAdminGuard],
   controllers: [AuthController],
-  exports: [AuthGuard, JwtModule, HashService, UserModule],
+  exports: [AuthGuard, JwtModule, HashService, UserModule, SuperAdminGuard],
 })
 export class AuthModule {}

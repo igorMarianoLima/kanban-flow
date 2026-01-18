@@ -1,6 +1,7 @@
 import {
   ForbiddenException,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Repository } from 'typeorm';
@@ -11,10 +12,11 @@ import { UserRequestDto } from 'src/modules/auth/dto/user-request.dto';
 import { BoardService } from '../board/board.service';
 import { UserService } from 'src/modules/user/user.service';
 import { randomUUID } from 'crypto';
-import { addDays } from 'date-fns';
+import { addDays, isPast } from 'date-fns';
 import { InviteStatus } from './enums/invite-status.enum';
 import { EmailService } from 'src/modules/email/email.service';
 import { ConfigService } from 'src/modules/config/config.service';
+import { UpdateInviteStatusDto } from './dto/update-invite-status.dto';
 
 @Injectable()
 export class InvitesService {
@@ -90,5 +92,57 @@ export class InvitesService {
       subject: `Invite to join to ${board.name}`,
       text: `You received a invite from ${creator.name} to join in ${board.name}. Accept using the following link: ${inviteLink}`,
     });
+  }
+
+  async findOneByToken({ token }: { token: string }) {
+    const invite = await this.repository.findOne({
+      where: {
+        token,
+      },
+    });
+
+    if (!invite) throw new NotFoundException('Invite not found');
+
+    return invite;
+  }
+
+  async updateInviteStatus({
+    token,
+    // user,
+    payload,
+  }: {
+    // user: UserRequestDto;
+    token: string;
+    payload: UpdateInviteStatusDto;
+  }) {
+    const invite = await this.findOneByToken({
+      token,
+    });
+
+    // const canUpdate = invite.email === user.email;
+    // if (!canUpdate) {
+    //   throw new ForbiddenException('You cannot access this resource');
+    // }
+
+    const isExpired = isPast(invite.expiresAt);
+    if (isExpired) {
+      if (invite.status !== InviteStatus.EXPIRED) {
+        invite.status = InviteStatus.EXPIRED;
+        await this.repository.save(invite);
+      }
+
+      throw new UnprocessableEntityException('Expired invite');
+    }
+
+    if (invite.status !== InviteStatus.PENDING) {
+      throw new UnprocessableEntityException('Invite cannot be updated');
+    }
+
+    if (payload.status === InviteStatus.ACCEPTED) {
+      invite.acceptedAt = new Date();
+    }
+
+    invite.status = payload.status;
+    this.repository.save(invite);
   }
 }

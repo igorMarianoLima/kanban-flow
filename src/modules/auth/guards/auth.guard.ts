@@ -44,6 +44,7 @@ export class AuthGuard implements CanActivate {
 
       const userRequest: UserRequestDto = {
         id: user.id,
+        email: user.email,
         isSuperAdmin: user.isSuperAdmin,
       };
 

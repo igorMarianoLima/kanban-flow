@@ -3,6 +3,7 @@ import { ConfigService as ConfigServiceNest } from '@nestjs/config';
 import { DbConfig } from './configs/db.config';
 import { EnvironmentConfig } from './configs/environment.config';
 import { JwtConfig } from './configs/jwt.config';
+import { EmailConfig } from './configs/email.config';
 
 @Injectable()
 export class ConfigService {
@@ -18,5 +19,9 @@ export class ConfigService {
 
   getJwtConfig() {
     return this.configService.get<JwtConfig>('jwt')!;
+  }
+
+  getEmailConfig() {
+    return this.configService.get<EmailConfig>('email')!;
   }
 }

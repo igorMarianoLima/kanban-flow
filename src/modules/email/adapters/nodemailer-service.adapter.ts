@@ -1,6 +1,7 @@
 import { Transporter } from 'nodemailer';
 import { EmailAdapterContract } from '../contracts/email-adapter.contract';
 import { ConfigService } from 'src/modules/config/config.service';
+import { SendEmailDto } from '../dto/send-email.dto';
 
 export class NodemailerServiceAdapter implements EmailAdapterContract {
   constructor(
@@ -8,14 +9,14 @@ export class NodemailerServiceAdapter implements EmailAdapterContract {
     private readonly configService: ConfigService,
   ) {}
 
-  async sendEmail(): Promise<void> {
+  async sendEmail(payload: SendEmailDto): Promise<void> {
     const { from } = this.configService.getEmailConfig();
 
     await this.transport.sendMail({
       from: `"No reply" <${from}>`,
-      to: 'test@email.com',
-      subject: 'Hello world',
-      text: 'Hello world from KanbanFlow',
+      to: payload.to,
+      subject: payload.subject,
+      text: payload.text,
     });
   }
 }

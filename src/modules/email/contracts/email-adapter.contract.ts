@@ -1,3 +1,5 @@
+import { SendEmailDto } from '../dto/send-email.dto';
+
 export abstract class EmailAdapterContract {
-  abstract sendEmail(): Promise<void>;
+  abstract sendEmail(payload: SendEmailDto): Promise<void>;
 }

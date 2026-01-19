@@ -33,15 +33,11 @@ export class InvitesController {
     });
   }
 
-  // I used GET only to tests without a frontend
   @Get('accept')
   @Public()
-  acceptInvite(
-    // @User() user: UserRequestDto,
-    @Query('token') token: string,
-  ) {
+  acceptInvite(@User() user: UserRequestDto, @Query('token') token: string) {
     return this.invitesService.updateInviteStatus({
-      // user,
+      user,
       token,
       payload: {
         status: InviteStatus.ACCEPTED,

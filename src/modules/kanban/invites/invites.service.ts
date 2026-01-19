@@ -108,10 +108,10 @@ export class InvitesService {
 
   async updateInviteStatus({
     token,
-    // user,
+    user,
     payload,
   }: {
-    // user: UserRequestDto;
+    user: UserRequestDto;
     token: string;
     payload: UpdateInviteStatusDto;
   }) {
@@ -119,10 +119,10 @@ export class InvitesService {
       token,
     });
 
-    // const canUpdate = invite.email === user.email;
-    // if (!canUpdate) {
-    //   throw new ForbiddenException('You cannot access this resource');
-    // }
+    const canUpdate = invite.email === user.email;
+    if (!canUpdate) {
+      throw new ForbiddenException('You cannot access this resource');
+    }
 
     const isExpired = isPast(invite.expiresAt);
     if (isExpired) {
@@ -143,6 +143,13 @@ export class InvitesService {
     }
 
     invite.status = payload.status;
-    this.repository.save(invite);
+
+    await this.boardService.addMembers({
+      user,
+      boardId: invite.board.id,
+      userIds: [user.id],
+    });
+
+    await this.repository.save(invite);
   }
 }

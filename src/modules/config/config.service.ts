@@ -4,6 +4,7 @@ import { DbConfig } from './configs/db.config';
 import { EnvironmentConfig } from './configs/environment.config';
 import { JwtConfig } from './configs/jwt.config';
 import { EmailConfig } from './configs/email.config';
+import { RedisConfig } from './configs/redis.config';
 
 @Injectable()
 export class ConfigService {
@@ -23,5 +24,9 @@ export class ConfigService {
 
   getEmailConfig() {
     return this.configService.get<EmailConfig>('email')!;
+  }
+
+  getRedisConfig() {
+    return this.configService.get<RedisConfig>('redis')!;
   }
 }

@@ -5,12 +5,13 @@ import dbConfig from './configs/db.config';
 import environmentConfig from './configs/environment.config';
 import jwtConfig from './configs/jwt.config';
 import emailConfig from './configs/email.config';
+import { redisConfig } from './configs/redis.config';
 
 @Global()
 @Module({
   imports: [
     ConfigModuleNest.forRoot({
-      load: [dbConfig, environmentConfig, jwtConfig, emailConfig],
+      load: [dbConfig, environmentConfig, jwtConfig, emailConfig, redisConfig],
     }),
   ],
   providers: [ConfigService],

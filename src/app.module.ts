@@ -8,6 +8,8 @@ import { KanbanModule } from './modules/kanban/kanban.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -34,6 +36,11 @@ import { EmailModule } from './modules/email/email.module';
     KanbanModule,
     AuthModule,
     EmailModule,
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+    }),
+    EventsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

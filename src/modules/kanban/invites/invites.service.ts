@@ -14,9 +14,10 @@ import { UserService } from 'src/modules/user/user.service';
 import { randomUUID } from 'crypto';
 import { addDays, isPast } from 'date-fns';
 import { InviteStatus } from './enums/invite-status.enum';
-import { EmailService } from 'src/modules/email/email.service';
 import { ConfigService } from 'src/modules/config/config.service';
 import { UpdateInviteStatusDto } from './dto/update-invite-status.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EmailEvent } from 'src/modules/events/enums/email-event.enum';
 
 @Injectable()
 export class InvitesService {
@@ -24,10 +25,10 @@ export class InvitesService {
     @InjectRepository(Invite)
     private readonly repository: Repository<Invite>,
 
+    private readonly eventEmitter: EventEmitter2,
     private readonly configService: ConfigService,
     private readonly boardService: BoardService,
     private readonly usersService: UserService,
-    private readonly emailService: EmailService,
   ) {}
 
   async sendInvite({
@@ -87,7 +88,7 @@ export class InvitesService {
       apiUrl,
     );
 
-    await this.emailService.sendEmail({
+    this.eventEmitter.emit(EmailEvent.SEND_EMAIL, {
       to: payload.email,
       subject: `Invite to join to ${board.name}`,
       text: `You received a invite from ${creator.name} to join in ${board.name}. Accept using the following link: ${inviteLink}`,

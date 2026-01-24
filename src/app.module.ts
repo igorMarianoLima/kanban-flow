@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './modules/events/events.module';
+import { BullConfigModule } from './modules/bull-config/bull-config.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { EventsModule } from './modules/events/events.module';
       delimiter: '.',
     }),
     EventsModule,
+    BullConfigModule,
   ],
   controllers: [AppController],
   providers: [AppService],

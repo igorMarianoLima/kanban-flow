@@ -5,6 +5,7 @@ networks:
   public_network:
   db_network:
   smtp_network:
+  redis_network:
 services:
   api:
     build: .
@@ -16,9 +17,11 @@ services:
       - public_network
       - db_network
       - smtp_network
+      - redis_network
     depends_on:
       - db
       - smtp
+      - redis
   db:
     image: postgres:16
     restart: always
@@ -45,3 +48,15 @@ services:
       - smtp_network
     ports:
       - 8025:8025
+  redis:
+    image: redis:8.4
+    networks:
+      - redis_network
+  redis_insight:
+    image: redis/redisinsight
+    networks:
+      - redis_network
+    environment:
+      RI_REDIS_HOST: redis
+    ports:
+      - 5540:5540

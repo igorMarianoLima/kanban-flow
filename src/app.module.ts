@@ -37,6 +37,7 @@ import { EventsModule } from './modules/events/events.module';
     AuthModule,
     EmailModule,
     EventEmitterModule.forRoot({
+      global: true,
       wildcard: true,
       delimiter: '.',
     }),

@@ -1,7 +1,10 @@
-import { Module } from '@nestjs/common';
-import { EventsService } from './events.service';
+import { Global, Module } from '@nestjs/common';
+import { EmailEventsListener } from './listeners/email-events.listener';
+import { EmailModule } from '../email/email.module';
 
+@Global()
 @Module({
-  providers: [EventsService]
+  imports: [EmailModule],
+  providers: [EmailEventsListener],
 })
 export class EventsModule {}

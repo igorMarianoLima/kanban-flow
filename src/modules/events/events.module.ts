@@ -1,10 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { EmailEventsListener } from './listeners/email-events.listener';
-import { EmailModule } from '../email/email.module';
+import { EmailQueueProducerModule } from 'src/queues/email/producer/email-queue-producer.module';
 
 @Global()
 @Module({
-  imports: [EmailModule],
+  imports: [EmailQueueProducerModule],
   providers: [EmailEventsListener],
 })
 export class EventsModule {}

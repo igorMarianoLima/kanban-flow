@@ -11,6 +11,7 @@ import { EmailModule } from './modules/email/email.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './modules/events/events.module';
 import { BullConfigModule } from './modules/bull-config/bull-config.module';
+import { WorkerModule } from './worker/worker.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { BullConfigModule } from './modules/bull-config/bull-config.module';
     }),
     EventsModule,
     BullConfigModule,
+    WorkerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

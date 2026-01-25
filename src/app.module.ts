@@ -45,7 +45,6 @@ import { WorkerModule } from './worker/worker.module';
     }),
     EventsModule,
     BullConfigModule,
-    WorkerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

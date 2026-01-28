@@ -11,7 +11,7 @@ import { EmailModule } from './modules/email/email.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { EventsModule } from './modules/events/events.module';
 import { BullConfigModule } from './modules/bull-config/bull-config.module';
-import { WorkerModule } from './worker/worker.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -31,6 +31,7 @@ import { WorkerModule } from './worker/worker.module';
           database: dbConfig.database,
           autoLoadEntities: true,
           synchronize: environment.env === 'development',
+          poolSize: 2,
         };
       },
     }),
@@ -45,6 +46,9 @@ import { WorkerModule } from './worker/worker.module';
     }),
     EventsModule,
     BullConfigModule,
+    CacheModule.register({
+      isGlobal: true,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

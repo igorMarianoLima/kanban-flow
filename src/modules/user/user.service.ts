@@ -5,6 +5,7 @@ import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { HashService } from '../auth/hash.service';
+import { UserCacheService } from './user-cache.service';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
     private readonly repository: Repository<User>,
 
     private readonly hashService: HashService,
+    private readonly cacheService: UserCacheService,
   ) {}
 
   async create(payload: CreateUserDto) {
@@ -31,6 +33,10 @@ export class UserService {
   }
 
   async findOne(id: string) {
+    const cachedUser = await this.cacheService.getUser(id);
+
+    if (cachedUser) return cachedUser;
+
     const user = await this.repository.findOne({
       where: {
         id,
@@ -39,6 +45,7 @@ export class UserService {
 
     if (!user) throw new NotFoundException('User not found');
 
+    this.cacheService.setUser(id, user);
     return user;
   }
 
